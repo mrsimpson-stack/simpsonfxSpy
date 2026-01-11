@@ -1,0 +1,19 @@
+{
+  "name": "whatsapp-linker",
+  "version": "1.0.0",
+  "description": "WhatsApp Pairing Code Generator",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0",
+    "axios": "^1.5.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
