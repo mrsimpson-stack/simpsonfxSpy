@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Link - Generate Pairing Codes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .whatsapp-bg { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
+        .code-font { font-family: 'Courier New', monospace; letter-spacing: 2px; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-md mx-auto p-4 pt-10">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="whatsapp-bg w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fab fa-whatsapp text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800">WhatsApp Link</h1>
+            <p class="text-gray-600">Generate pairing codes for all countries</p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <!-- Step 1: Input -->
+            <div id="step1">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-mobile-alt text-green-500"></i> Enter Details
+                </h2>
+                
+                <!-- Country -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Country</label>
+                    <select id="countryCode" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <option value="UG" selected>🇺🇬 Uganda (+256)</option>
+                        <option value="US">🇺🇸 USA (+1)</option>
+                        <option value="GB">🇬🇧 UK (+44)</option>
+                        <option value="IN">🇮🇳 India (+91)</option>
+                        <option value="KE">🇰🇪 Kenya (+254)</option>
+                        <option value="TZ">🇹🇿 Tanzania (+255)</option>
+                        <option value="RW">🇷🇼 Rwanda (+250)</option>
+                        <option value="NG">🇳🇬 Nigeria (+234)</option>
+                    </select>
+                </div>
+                
+                <!-- Phone -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Phone Number</label>
+                    <div class="flex">
+                        <div id="countryPrefix" class="bg-gray-100 p-3 border border-r-0 rounded-l-lg">+256</div>
+                        <input type="tel" id="phoneNumber" 
+                               class="flex-1 p-3 border rounded-r-lg"
+                               placeholder="712345678"
+                               maxlength="10">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Enter without country code</p>
+                </div>
+                
+                <!-- Generate Button -->
+                <button onclick="generateCode()"
+                        class="w-full whatsapp-bg text-white p-4 rounded-lg font-bold text-lg hover:opacity-90 pulse">
+                    <i class="fas fa-key"></i> Generate 8-Digit Code
+                </button>
+            </div>
+            
+            <!-- Step 2: Show Code -->
+            <div id="step2" class="hidden">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-key text-green-500"></i> Your Pairing Code
+                </h2>
+                
+                <!-- Code Display -->
+                <div class="text-center mb-8">
+                    <div class="text-5xl font-bold code-font text-gray-800 mb-4" id="pairingCode">
+                        XXXX-XXXX
+                    </div>
+                    <div class="text-gray-600 mb-4">
+                        <i class="fas fa-clock"></i> Expires in: 
+                        <span id="countdown" class="font-bold text-green-600">05:00</span>
+                    </div>
+                    <button onclick="copyCode()" 
+                            class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <h4 class="font-bold text-green-800 mb-2">
+                        <i class="fas fa-mobile-alt"></i> How to use:
+                    </h4>
+                    <ol class="text-green-700 text-sm list-decimal pl-5 space-y-1">
+                        <li>Open WhatsApp on phone</li>
+                        <li>Settings → Linked Devices</li>
+                        <li>Tap "Link a Device"</li>
+                        <li>Select "Link with phone number"</li>
+                        <li>Enter the code above</li>
+                        <li>Tap "Link Device"</li>
+                    </ol>
+                </div>
+                
+                <!-- Verify Button -->
+                <button onclick="verifyCode()" 
+                        class="w-full whatsapp-bg text-white p-4 rounded-lg font-bold text-lg hover:opacity-90">
+                    <i class="fas fa-check"></i> I've Entered the Code
+                </button>
+                
+                <!-- Back Button -->
+                <button onclick="resetForm()" 
+                        class="w-full mt-3 text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-redo"></i> Generate New Code
+                </button>
+            </div>
+            
+            <!-- Step 3: Success -->
+            <div id="step3" class="hidden">
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-green-500 text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Linked Successfully!</h2>
+                    <p class="text-gray-600 mb-6">Your WhatsApp is now connected</p>
+                    
+                    <a href="/dashboard" 
+                       class="block whatsapp-bg text-white p-4 rounded-lg font-bold text-lg hover:opacity-90 mb-4">
+                        <i class="fas fa-comments"></i> Open Dashboard
+                    </a>
+                    
+                    <button onclick="resetForm()" 
+                            class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-plus"></i> Link Another Device
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center text-gray-500 text-sm mt-6">
+            <p>Works with WhatsApp Web • All countries supported</p>
+            <p>Messages are end-to-end encrypted</p>
+        </div>
+    </div>
+
+    <script>
+        let currentCode = '';
+        let sessionId = '';
+        let phoneNumber = '';
+        let countdownInterval = null;
+        
+        // Update country prefix
+        document.getElementById('countryCode').addEventListener('change', function() {
+            const prefixes = {
+                'UG': '+256', 'US': '+1', 'GB': '+44', 'IN': '+91',
+                'KE': '+254', 'TZ': '+255', 'RW': '+250', 'NG': '+234'
+            };
+            document.getElementById('countryPrefix').textContent = prefixes[this.value] || '+256';
+        });
+        
+        // Generate code
+        async function generateCode() {
+            const country = document.getElementById('countryCode').value;
+            const phone = document.getElementById('phoneNumber').value.trim();
+            
+            if (!phone || phone.length < 8) {
+                alert('Please enter a valid phone number (at least 8 digits)');
+                return;
+            }
+            
+            // Show loading
+            const btn = document.querySelector('#step1 button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            btn.disabled = true;
+            
+            try {
+                // Call API
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        phoneNumber: phone,
+                        countryCode: country 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Store data
+                    currentCode = data.code;
+                    sessionId = data.sessionId;
+                    phoneNumber = data.phoneNumber;
+                    
+                    // Show code
+                    document.getElementById('pairingCode').textContent = data.formattedCode;
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                    
+                    // Start countdown
+                    startCountdown(data.expiresIn);
+                    
+                    console.log('Generated code:', data);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to generate code. Please check console.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // Copy code
+        function copyCode() {
+            const code = document.getElementById('pairingCode').textContent;
+            navigator.clipboard.writeText(code);
+            alert('Code copied to clipboard!');
+        }
+        
+        // Start countdown
+        function startCountdown(seconds) {
+            let remaining = seconds;
+            
+            function update() {
+                const minutes = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                document.getElementById('countdown').textContent = 
+                    `${minutes}:${secs.toString().padStart(2, '0')}`;
+                
+                if (remaining <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').textContent = 'Expired!';
+                    document.getElementById('countdown').classList.add('text-red-600');
+                }
+                remaining--;
+            }
+            
+            update();
+            countdownInterval = setInterval(update, 1000);
+        }
+        
+        // Verify code
+        async function verifyCode() {
+            const btn = document.querySelector('#step2 button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        code: currentCode,
+                        sessionId: sessionId,
+                        phoneNumber: phoneNumber
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Success!
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                    clearInterval(countdownInterval);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Verification failed. Please try again.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('pairingCode').textContent = 'XXXX-XXXX';
+            clearInterval(countdownInterval);
+            currentCode = '';
+            sessionId = '';
+        }
+        
+        // Auto-focus phone input
+        document.getElementById('phoneNumber').focus();
+    </script>
+</body>
+</html>
